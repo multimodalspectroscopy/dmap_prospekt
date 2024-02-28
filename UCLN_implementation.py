@@ -1,17 +1,18 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
-from matplotlib.lines import Line2D
 from functools import partial
 from sklearn.linear_model import LinearRegression
 from mms_nirs.UCLN import DefaultValues
 from mms_nirs.utils import ExtinctionCoefficients, calc_dpf,calc_attenuation_slope
 from scipy.interpolate import interp1d
+import matplotlib.pyplot as plt
+
 
 def calculate_concentrations(spectra_file_path: str, 
                              wavelengths_file_path: str, 
                              optode_dist: float, 
-                             dpf: float) -> pd.DataFrame:
+                             dpf: float, 
+                             plot_data: bool = True):
     
     # Load spectra and wavelengths
     spectra = np.loadtxt(spectra_file_path, delimiter=',')
@@ -48,20 +49,37 @@ def calculate_concentrations(spectra_file_path: str,
     
     # Convert concentrations array to a DataFrame
     concentrations_df = pd.DataFrame(concentrations, columns=['HbO2', 'HHb', 'CCO'])
-    
+
+    if plot_data:
+        # Assuming concentrations_df is the DataFrame containing the concentrations 
+        # Generate time values starting from 1 and incrementing by 1 for each row in the DataFrame
+        time_values = range(1, len(concentrations_df) + 1)
+        # Plot the data using the generated time values
+        plt.plot(time_values, concentrations_df['HbO2'], label='HbO2', marker='|')  # Circle marker for HbO2
+        plt.plot(time_values, concentrations_df['HHb'], label='HHb', marker='|')    # Square marker for HHb
+        plt.plot(time_values, concentrations_df['CCO'], label='CCO', marker='|')    # Triangle marker for CCO
+        # Add labels and title
+        plt.xlabel('Time (min)')
+        plt.ylabel('Concentration (uMol)')
+        plt.title('Concentration changes for [HHb], [HbO2] and [oxCCO] over time')
+        # Add legend
+        plt.legend()
+        # Show the plot
+        plt.show()
+
     return concentrations_df
 
 # Define file paths
 spectra_file_path = "/Users/darshana/Desktop/Github_spectra.csv"
-wavelengths_file_path = "/Users/darshana/Desktop/Github_wavelengths.csv"
+wavelengths_file_path = "/Users/darshana/Desktop/Github)wavelengths.csv"
 
 # Define optode_dist and dpf
 optode_dist = 3
 dpf = 4.99
-
+plot_data = True
 # Calculate concentrations
 concentrations = []
-conc = calculate_concentrations(spectra_file_path, wavelengths_file_path, optode_dist, dpf)
+conc = calculate_concentrations(spectra_file_path, wavelengths_file_path, optode_dist, dpf, plot_data)
 concentrations.append(conc * 1000)
 print(concentrations)
 
@@ -73,3 +91,6 @@ file_path = '/Users/darshana/Desktop/concentrations_df.xlsx'
 
 # Export concentrations DataFrame to Excel
 concentrations_df.to_excel(file_path, index=False)
+
+
+
