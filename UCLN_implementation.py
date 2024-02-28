@@ -1,23 +1,28 @@
 import numpy as np
+import matplotlib.pyplot as plt
 import pandas as pd
-from scipy.interpolate import interp1d
+from matplotlib.lines import Line2D
+from functools import partial
+from sklearn.linear_model import LinearRegression
 from mms_nirs.UCLN import DefaultValues
+from mms_nirs.utils import ExtinctionCoefficients, calc_dpf,calc_attenuation_slope
+from scipy.interpolate import interp1d
 
 def calculate_concentrations(spectra_file_path: str, 
                              wavelengths_file_path: str, 
                              optode_dist: float, 
                              dpf: float) -> pd.DataFrame:
+    
     # Load spectra and wavelengths
     spectra = np.loadtxt(spectra_file_path, delimiter=',')
     spectra_wavelengths = np.loadtxt(wavelengths_file_path, delimiter='\t')
-    
-    # Extinction coefficients
-    extinction_coefficients = DefaultValues().extinction_coefficients
-    extinction_coefficients_inv = np.linalg.pinv(extinction_coefficients)
-    
-    # Wavelength dependency
+
+    # Load extinction coefficients
+    epsilon_labview_771to906 = DefaultValues().extinction_coefficients
+    extinction_coefficients_inv = np.linalg.pinv(epsilon_labview_771to906)
     wavelength_dependency = DefaultValues().wavelength_dependency
-    
+    print('epsilon_labview_771to906', epsilon_labview_771to906)
+    print('wavelength_dependency', wavelength_dependency)
     # Interpolate values to extinction wavelengths
     interp_wavelengths = np.arange(780, 901)
     
@@ -47,21 +52,24 @@ def calculate_concentrations(spectra_file_path: str,
     return concentrations_df
 
 # Define file paths
-spectra_file_path = "/Users/darshana/Library/CloudStorage/OneDrive-UniversityCollegeLondon/30-jan-data/30-jan-Spectra.csv"
-wavelengths_file_path = "/Users/darshana/Library/CloudStorage/OneDrive-UniversityCollegeLondon/30-jan-data/30-jan-Wavelengths.csv"
+spectra_file_path = "/Users/darshana/Desktop/Github_spectra.csv"
+wavelengths_file_path = "/Users/darshana/Desktop/Github_wavelengths.csv"
 
 # Define optode_dist and dpf
 optode_dist = 3
-dpf = 4.990
+dpf = 4.99
 
 # Calculate concentrations
-concentrations = calculate_concentrations(spectra_file_path, wavelengths_file_path, optode_dist, dpf) * 1000
+concentrations = []
+conc = calculate_concentrations(spectra_file_path, wavelengths_file_path, optode_dist, dpf)
+concentrations.append(conc * 1000)
 print(concentrations)
 
-#Export to excel
 # Convert concentrations to DataFrame
-concentrations_df = pd.DataFrame(concentrations, columns=['HbO2', 'HHb', 'CCO'])
+concentrations_df = pd.DataFrame(concentrations[0], columns=['HbO2', 'HHb', 'CCO'])
+
 # Define the file path
-file_path = '/Users/darshana/Desktop/darshana_UCLN_concentrations_df.xlsx'
+file_path = '/Users/darshana/Desktop/concentrations_df.xlsx'
+
 # Export concentrations DataFrame to Excel
 concentrations_df.to_excel(file_path, index=False)

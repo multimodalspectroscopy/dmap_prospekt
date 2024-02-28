@@ -19,7 +19,6 @@ from SRS import srs_values, calc_conc, calc_k_mua, calc_sto2
 from scipy.stats import linregress
 from scipy import interpolate
 
-print('ExtinctionCoefficients', ExtinctionCoefficients.columns)
 
 def Data_Pre_Processing(data_path,path_subject,plot_data,conf_det_merged):
 
