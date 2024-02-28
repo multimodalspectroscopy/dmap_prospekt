@@ -12,7 +12,7 @@ def calculate_concentrations(spectra_file_path: str,
                              wavelengths_file_path: str, 
                              optode_dist: float, 
                              dpf: float, 
-                             plot_data: bool = True):
+                             plot_data: bool):
     
     # Load spectra and wavelengths
     spectra = np.loadtxt(spectra_file_path, delimiter=',')
