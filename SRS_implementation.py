@@ -209,7 +209,7 @@ def Data_Pre_Processing(data_path,path_subject,plot_data,conf_det_merged):
 
 ## Check pre-processed data
 
-path_subject = "/Users/darshana/CYRIL_Charly_121923/PROSPEKT/PMS0057_36+3__140923_101721"
+path_subject = "/Users/darshana/CYRIL_Charly_121923/PROSPEKT/PMS0002_35+6__020823_105226"
 
 data = np.load(path_subject+"/output/Input.npz")
 SD_separations = data['SD_separations_in_mm']
@@ -339,10 +339,21 @@ def compute_SRS(path_subject,chrom,wave_start,wave_end,plot_data):
     print('SD',SD)
     print('k_mua',k_mua)
 
+
+
     C_df = pd.DataFrame(C)
     StO2_df = pd.DataFrame(StO2)
     SD_df = pd.DataFrame(SD)
     k_mua_df = pd.DataFrame(k_mua)
+
+        # Plot k_mua against wavelengths
+    plt.figure()
+    plt.plot(WAVELENGTHS, k_mua_df.T)  
+    plt.title("Absorption coefficient (k_mua) vs Wavelength")
+    plt.xlabel("Wavelength (nm)")
+    plt.ylabel("Absorption coefficient (1/cm)")
+    plt.grid(True)
+    plt.show()
 
     excel_file = '/Users/darshana/Desktop/darshana_SRS_output.xlsx'
 
@@ -352,12 +363,12 @@ def compute_SRS(path_subject,chrom,wave_start,wave_end,plot_data):
         SD_df.to_excel(writer, sheet_name='sheet_3', index=False)
         k_mua_df.to_excel(writer, sheet_name='sheet_4', index=False)
 
-## Process SRS
+# Process SRS
 plt.close('all')
 
 # data path
 data_path = "/Users/darshana/CYRIL_Charly_121923/PROSPEKT/"
-path_subject = "/Users/darshana/CYRIL_Charly_121923/PROSPEKT/PMS0057_36+3__140923_101721"
+path_subject = "/Users/darshana/CYRIL_Charly_121923/PROSPEKT/PMS0002_35+6__020823_105226"
 
 #absortion and extinction coeff for fitting
 #chrom=np.array(["HHb", "HbO2", "water"])
